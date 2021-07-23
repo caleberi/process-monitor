@@ -5,9 +5,9 @@
 
 /**
  * Defines the constants used by the process manager
- * !\ DO NOT CHANGE THE ORDER OF THE CONSTANTS
+ * 
  */
-enum CPUstates
+enum class CPUstates
 {
     S_USER = 0,
     S_NICE,
