@@ -103,4 +103,18 @@ std::string ProcessParser::getProcUptime(std::string pid)
     std::vector<std::string> tokens{beg, end};
     return std::to_string(std::stof(tokens[13]) / sysconf(_SC_CLK_TCK));
 }
+
+long int ProcessParser::getSysUptime()
+{
+    std::string line;
+    std::string value;
+    std::ifstream stream;
+    std::string path{Path::basePath() + Path::upTimePath()};
+    stream.open(path);
+    std::getline(stream, line);
+    std::istringstream buffer(line);
+    std::istream_iterator<std::string> beg(buffer), end;
+    std::vector<std::string> tokens{beg, end};
+    return std::stoi(tokens[0]);
+}
 #endif // PROCESSPARSER_H
