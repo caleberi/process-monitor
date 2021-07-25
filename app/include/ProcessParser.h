@@ -19,6 +19,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <constants.h>
+#include "../constants/Constants.h"
 
 class ProcessParser
 {
@@ -43,4 +44,25 @@ public:
     static std::string printCpuStats(std::vector<std::string> value1, std::vector<std::string> value2);
 };
 
+std::string ProcessParser::getVmSize(std::string pid)
+{
+    std::string line;
+    std::string searchParams = "VmData";
+    std::ifstream stream;
+    std::string path{Path::basePath() + pid + Path::statusPath()};
+    float dataSize;
+    stream.open(path);
+    while (std::getline(stream, line))
+    {
+        if (line.compare(0, searchParams.size(), searchParams) == 0)
+        {
+            std::istringstream buffer(line);
+            std::istream_iterator<std::string> beg(buffer), end;
+            std::vector<std::string> tokens{beg, end};
+            dataSize = (stof(tokens[1]) / (1024 * 1024));
+            break;
+        }
+    }
+    return std::to_string(dataSize) + "GB";
+}
 #endif // PROCESSPARSER_H
