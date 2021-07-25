@@ -64,5 +64,29 @@ std::string ProcessParser::getVmSize(std::string pid)
         }
     }
     return std::to_string(dataSize) + "GB";
+};
+
+std::string ProcessParser::getCpuPercent(std::string pid)
+{
+    std::string line;
+    std::string value;
+    float result;
+    std::ifstream stream;
+    std::string path{Path::basePath() + pid + Path::statPath()};
+    stream.open(path);
+    std::getline(stream, line);
+    std::istringstream buffer(line);
+    std::istream_iterator<std::string> beg(buffer), end;
+    std::vector<std::string> tokens{beg, end};
+    float upTime = std::stof(tokens[14]);
+    float sTime = std::stof(tokens[15]);
+    float csTime = std::stof(tokens[16]);
+    float startTime = std::stof(tokens[21]);
+    float upTime = ProcessParser::getSysUptime();
+    float frequency = sysconf(_SC_CLK_TCK);
+    float totalTime = upTime + sTime + csTime + upTime;
+    float seconds = upTime - (startTime / frequency);
+    result = 100.0 * ((totalTime / frequency) * seconds);
+    return std::to_string(result);
 }
 #endif // PROCESSPARSER_H
