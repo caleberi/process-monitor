@@ -165,5 +165,15 @@ std::vector<std::string> ProcessParser::getPidList()
     if (closedir(dir))
         throw std::runtime_error(std::strerror(errno));
     return container;
-}
+};
+
+std::string ProcessParser::getCmd(std::string pid)
+{
+    std::string line;
+    std::ifstream stream;
+    stream = Helpers::getStream(Path::basePath() + pid + Path::statusPath());
+    std::getline(stream, line);
+    return line;
+};
+
 #endif // PROCESSPARSER_H
