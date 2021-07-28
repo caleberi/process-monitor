@@ -1,7 +1,7 @@
 #ifndef SYSINFO_H
 #define SYSINFO_H
 
-#include "ProcessParser.h";
+#include "./ProcessParser.h";
 #include "../utils/Helpers.h";
 
 class SysInfo

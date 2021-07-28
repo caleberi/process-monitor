@@ -2,6 +2,7 @@
 #define PROCESS_H
 
 #include <string>
+#include "ProcessParser.h"
 
 class Process
 {
@@ -24,27 +25,27 @@ public:
         this->cpu = ProcessParser::getCpuPercent(pid);
     }
     void setPid(int pid);
-    string getPid() const;
-    string getUser() const;
-    string getCmd() const;
+     std::string getPid() const;
+     std::string getUser() const;
+     std::string getCmd() const;
     int getCpu() const;
     int getMem() const;
-    string getUpTime() const;
-    string getProcess();
+     std::string getUpTime() const;
+     std::string getProcess();
 };
 
 void Process::setPid(int pid)
 {
     this->pid = pid;
 }
-string Process::getPid() const
+ std::string Process::getPid() const
 {
     return this->pid;
 }
-string Process::getProcess()
+ std::string Process::getProcess()
 {
     this->mem = ProcessParser::getVmSize(this->pid);
-    this->up_time = ProcessParser::getProcUpTime(this->pid);
+    this->upTime = ProcessParser::getProcUpTime(this->pid);
     this->cpu = ProcessParser::getCpuPercent(this->pid);
 
     return (this->pid + "   " + this->user + "   " + this->mem.substr(0, 5) + "     " + this->cpu.substr(0, 5) + "     " + this->upTime.substr(0, 5) + "    " + this->cmd.substr(0, 30) + "...");

@@ -18,7 +18,6 @@
 #include <dirent.h>
 #include <time.h>
 #include <unistd.h>
-#include <constants.h>
 #include "../constants/Constants.h"
 #include "../utils/Helpers.h"
 
@@ -237,7 +236,7 @@ float getSysActiveCpuTime(std::vector<std::string> values)
 
 float getSysIdleCpuTime(std::vector<std::string> values)
 {
-    return (stof(values[CPUstates::S_IDLE]) + stof(values[CPUstates::S_IOWAIT]));
+    return (std::stof(values[CPUstates::S_IDLE]) + stof(values[CPUstates::S_IOWAIT]));
 }
 
 float ProcessParser::getSysRamPercent()

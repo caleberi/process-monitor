@@ -1,4 +1,4 @@
-#ifndef CONSTANTS_H
+#ifndef  CONSTANTS_H
 #define CONSTANTS_H
 
 #include <string>
@@ -7,7 +7,7 @@
  * Defines the constants used to define process manager
  * statuses representation.
  */
-enum class CPUstates
+enum  CPUstates
 {
     S_USER = 0,
     S_NICE,
@@ -86,6 +86,6 @@ public:
     {
         return "version";
     }
-}
+};
 
 #endif /* CONSTANTS_H */
