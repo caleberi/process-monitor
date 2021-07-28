@@ -155,9 +155,7 @@ std::vector<std::string> ProcessParser::getPidList()
             continue;
         if (std::all_of(dirp->d_name, dirp->d_name + std::strlen(dirp->d_name), [](char c)
                         { return !isdigit(c); }))
-        {
             container.push_back(dirp->d_name);
-        }
     }
     if (closedir(dir))
         throw std::runtime_error(std::strerror(errno));
@@ -241,4 +239,164 @@ float getSysIdleCpuTime(std::vector<std::string> values)
 {
     return (stof(values[CPUstates::S_IDLE]) + stof(values[CPUstates::S_IOWAIT]));
 }
+
+float ProcessParser::getSysRamPercent()
+{
+    std::string line;
+    std::vector<std::string> searchParams = {"MemTotal:", "MemFree:", "Buffers:"};
+    std::string value;
+    int result;
+    float totalMemory = 0;
+    float freeMemory = 0;
+    float bufferMemory = 0;
+    std::ifstream stream = Helpers::getStream((Path::basePath() + Path::memoInfoPath()));
+    while (std::getline(stream, line))
+    {
+        if (totalMemory != 0 && freeMemory != 0)
+        {
+            break;
+        }
+        if (line.compare(0, searchParams[0].size(), searchParams[0]) == 0)
+        {
+            std::istringstream buffer(line);
+            std::istream_iterator<std::string> beg(buffer), end;
+            std::vector<std::string> tokens{beg, end};
+            totalMemory = stof(tokens[1]);
+        }
+
+        if (line.compare(0, searchParams[1].size(), searchParams[1]) == 0)
+        {
+            std::istringstream buffer(line);
+            std::istream_iterator<std::string> beg(buffer), end;
+            std::vector<std::string> tokens{beg, end};
+            freeMemory = stof(tokens[1]);
+        }
+
+        if (line.compare(0, searchParams[3].size(), searchParams[3]) == 0)
+        {
+            std::istringstream buffer(line);
+            std::istream_iterator<std::string> beg(buffer), end;
+            std::vector<std::string> tokens{beg, end};
+            bufferMemory = stof(tokens[1]);
+        }
+    }
+    return (100.0 * (1 - (freeMemory / (totalMemory - bufferMemory))));
+};
+
+std::string ProcessParser::getSysKernelVersion()
+{
+    std::string line;
+    std::string searchParam = "Linux version ";
+    std::ifstream stream = Helpers::getStream((Path::basePath() + Path::versionPath()));
+    while (std::getline(stream, line))
+    {
+        if (line.compare(0, searchParam.size(), searchParam) == 0)
+        {
+            std::istringstream buffer(line);
+            std::istream_iterator<std::string> beg(buffer), end;
+            std::vector<std::string> tokens{beg, end};
+            return tokens[2];
+        }
+    }
+    return "";
+};
+
+std::string ProcessParser::getOsName()
+{
+    std::string line;
+    std::string searchParam = "PRETTY_NAME=";
+    std::ifstream stream = Helpers::getStream("/etc/os-release");
+    while (std::getline(stream, line))
+    {
+        if (line.compare(0, searchParam.size(), searchParam) == 0)
+        {
+            std::size_t found = line.find("=");
+            found++;
+            std::string result = line.substr(found);
+            result.erase(std::remove(result.begin(), result.end(), '"'), result.end());
+            return result;
+        }
+    }
+    return "";
+}
+
+int ProcessParser::getTotalThreads()
+{
+    std::string line;
+    int result = 0;
+    std::string searchParam = "Threads:";
+    std::vector<std::string> pidList = getPidList();
+    for (auto pid : pidList)
+    {
+        std::ifstream stream = Helpers::getStream((Path::basePath() + pid + Path::statusPath()));
+        while (std::getline(stream, line))
+        {
+            if (line.compare(0, searchParam.size(), searchParam) == 0)
+            {
+                std::istringstream buffer(line);
+                std::istream_iterator<std::string> beg(buffer), end;
+                std::vector<std::string> tokens{beg, end};
+                result += stoi(tokens[1]);
+                break;
+            }
+        }
+    }
+    return result;
+}
+
+int ProcessParser::getTotalNumberOfProcesses()
+{
+    std::string line;
+    int result = 0;
+    std::string searchParam = "processes:";
+    std::ifstream stream = Helpers::getStream((Path::basePath() + Path::statPath()));
+    while (std::getline(stream, line))
+    {
+        if (line.compare(0, searchParam.size(), searchParam) == 0)
+        {
+            std::istringstream buffer(line);
+            std::istream_iterator<std::string> beg(buffer), end;
+            std::vector<std::string> tokens{beg, end};
+            result += stoi(tokens[1]);
+            break;
+        }
+    }
+    return result;
+};
+
+int ProcessParser::getNumberOfRunningProcesses()
+{
+    std::string line;
+    int result = 0;
+    std::string searchParam = "procs_running:";
+    std::ifstream stream = Helpers::getStream((Path::basePath() + Path::statPath()));
+    while (std::getline(stream, line))
+    {
+        if (line.compare(0, searchParam.size(), searchParam) == 0)
+        {
+            std::istringstream buffer(line);
+            std::istream_iterator<std::string> beg(buffer), end;
+            std::vector<std::string> tokens{beg, end};
+            result += stoi(tokens[1]);
+            break;
+        }
+    }
+    return result;
+};
+
+int test_get_pid_list()
+{
+    int counter = 0;
+    for (int i = 0; i < ProcessParser::getPidList().size(); i++)
+    {
+        std::cout << ProcessParser::getPidList().at(i) << std::endl;
+        counter++;
+        if (counter > 10)
+        {
+            std::cout << std::endl;
+            counter = 0;
+        }
+    }
+}
+
 #endif // PROCESSPARSER_H
