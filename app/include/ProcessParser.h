@@ -21,6 +21,16 @@
 #include "../constants/Constants.h"
 #include "../utils/Helpers.h"
 
+
+
+float getSysActiveCpuTime(std::vector<std::string>);
+float getSysIdleCpuTime(std::vector<std::string> );
+
+/**
+ * @brief  ProcessParser parse all the file required to there necessary data 
+ *              data question
+ * 
+ * */
 class ProcessParser
 {
 public:
@@ -33,7 +43,7 @@ public:
     static std::string getProcUser(std::string pid);
     static std::vector<std::string> getSysCpuPercent(std::string coreNumber = "");
     static float getSysRamPercent();
-    static int ProcessParser::getNumbersOfCores();
+    static int getNumbersOfCores();
     static std::string getSysKernelVersion();
     static int getTotalThreads();
     static int getTotalNumberOfProcesses();
@@ -78,7 +88,6 @@ std::string ProcessParser::getCpuPercent(std::string pid)
     float sTime = std::stof(tokens[15]);
     float csTime = std::stof(tokens[16]);
     float startTime = std::stof(tokens[21]);
-    float upTime = ProcessParser::getSysUpTime();
     float frequency = sysconf(_SC_CLK_TCK);
     float totalTime = upTime + sTime + csTime + upTime;
     float seconds = upTime - (startTime / frequency);
@@ -89,7 +98,6 @@ std::string ProcessParser::getCpuPercent(std::string pid)
 std::string ProcessParser::getProcUpTime(std::string pid)
 {
     std::string line;
-    std::ifstream stream;
     std::string path{Path::basePath() + pid + Path::statPath()};
     std::ifstream stream = Helpers::getStream(path);
     std::getline(stream, line);
@@ -220,6 +228,7 @@ We use a formula to calculate overall activity of processor.
     float idleTime = getSysIdleCpuTime(values2) - getSysIdleCpuTime(values1);
     float totalTime = activeTime + idleTime;
     float result = 100.0 * (activeTime / totalTime);
+    return std::to_string(result);
 };
 
 float getSysActiveCpuTime(std::vector<std::string> values)
@@ -396,6 +405,7 @@ int test_get_pid_list()
             counter = 0;
         }
     }
+    return 0;
 }
 
 #endif // PROCESSPARSER_H

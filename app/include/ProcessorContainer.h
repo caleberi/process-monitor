@@ -25,6 +25,10 @@ private:
     std::vector<Process> _list;
 };
 
+/**
+ * @brief Clears and re-populate the process list to refresh the
+ *           terminal
+ */
 void ProcessContainer ::refreshList()
 {
     std::vector<std::string> pids = ProcessParser::getPidList();
@@ -36,6 +40,11 @@ void ProcessContainer ::refreshList()
     }
 }
 
+/**
+ * @brief  print the current  Process List to display running processes
+ * 
+ * @return std::string 
+ */
 std::string ProcessContainer ::printList()
 {
     std::string result = "";
@@ -46,6 +55,11 @@ std::string ProcessContainer ::printList()
     return result;
 }
 
+/**
+ * @brief  retrieves the list of the current process
+ * 
+ * @return std::vector<std::string> 
+ */
 std::vector<std::string> ProcessContainer ::getList()
 {
     std::vector<std::string> values;

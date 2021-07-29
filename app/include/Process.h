@@ -4,6 +4,11 @@
 #include <string>
 #include "ProcessParser.h"
 
+/**
+ * @brief  Creates a process with the pid and generates the process uptime , the vmsize 
+ *              cmdline arg to run such process , memory used by usage
+ * 
+ */
 class Process
 {
 private:
@@ -21,7 +26,7 @@ private:
     std::string upTime;
 
 public:
-    Process(string pid)
+    Process(std::string pid)
     {
         this->pid = pid;
         this->user = ProcessParser::getProcUser(pid);
