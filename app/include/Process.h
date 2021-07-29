@@ -7,11 +7,17 @@
 class Process
 {
 private:
+    // the process id
     std::string pid;
+    // the user name of the current process
     std::string user;
+    // the command line of the current process
     std::string cmd;
+    // the cpu usage of the current process
     std::string cpu;
+    // the memory usage of the current process
     std::string mem;
+    // the virtual memory usage of the current process
     std::string upTime;
 
 public:
@@ -25,24 +31,36 @@ public:
         this->cpu = ProcessParser::getCpuPercent(pid);
     }
     void setPid(int pid);
-     std::string getPid() const;
-     std::string getUser() const;
-     std::string getCmd() const;
+    std::string getPid() const;
+    std::string getUser() const;
+    std::string getCmd() const;
     int getCpu() const;
     int getMem() const;
-     std::string getUpTime() const;
-     std::string getProcess();
+    std::string getUpTime() const;
+    std::string getProcess();
 };
 
+/**
+ * @brief get the process id
+ **/
 void Process::setPid(int pid)
 {
     this->pid = pid;
 }
- std::string Process::getPid() const
+/**
+ * @brief get the process id
+ * @return the process id
+ * */
+std::string Process::getPid() const
 {
     return this->pid;
 }
- std::string Process::getProcess()
+
+/**
+ * @brief get the user name of the current process
+ * @return the description  of the current process
+ * */
+std::string Process::getProcess()
 {
     this->mem = ProcessParser::getVmSize(this->pid);
     this->upTime = ProcessParser::getProcUpTime(this->pid);
