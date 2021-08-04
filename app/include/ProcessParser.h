@@ -1,3 +1,4 @@
+// https://github.com/dave-msk/CppND-System-Monitor/blob/master/process_parser.cc
 #ifndef PROCESSPARSER_H
 #define PROCESSPARSER_H
 #include <algorithm>
@@ -67,7 +68,7 @@ std::string ProcessParser::getVmSize(std::string pid)
             std::istringstream buffer(line);
             std::istream_iterator<std::string> beg(buffer), end;
             std::vector<std::string> tokens{beg, end};
-            dataSize = (stof(tokens[1]) / (1024 * 1024));
+            dataSize = (std::stof(tokens[1]) / (1024 * 1024));
             break;
         }
     }
@@ -78,7 +79,8 @@ std::string ProcessParser::getCpuPercent(std::string pid)
 {
     std::string line;
     float result;
-    std::string path{Path::basePath() + pid + Path::statPath()};
+    
+    std::string path{Path::basePath() + pid + "/"+Path::statPath()};
     std::ifstream stream = Helpers::getStream(path);
     std::getline(stream, line);
     std::istringstream buffer(line);
@@ -98,7 +100,7 @@ std::string ProcessParser::getCpuPercent(std::string pid)
 std::string ProcessParser::getProcUpTime(std::string pid)
 {
     std::string line;
-    std::string path{Path::basePath() + pid + Path::statPath()};
+    std::string path{Path::basePath() + pid +"/"+ Path::statPath()};
     std::ifstream stream = Helpers::getStream(path);
     std::getline(stream, line);
     std::istringstream buffer(line);
@@ -154,14 +156,16 @@ std::vector<std::string> ProcessParser::getPidList()
 {
     DIR *dir;
     std::vector<std::string> container;
-    if (!(dir = opendir("/proc")))
+    if (!(dir = opendir("/proc"))){
+        std::cout << "Error **"<<std::endl;
         throw std::runtime_error(std::strerror(errno));
+    }
     while (dirent *dirp = readdir(dir))
     {
         if (dirp->d_type != DT_DIR)
             continue;
         if (std::all_of(dirp->d_name, dirp->d_name + std::strlen(dirp->d_name), [](char c)
-                        { return !isdigit(c); }))
+                        { return isdigit(c); }))
             container.push_back(dirp->d_name);
     }
     if (closedir(dir))
@@ -245,7 +249,7 @@ float getSysActiveCpuTime(std::vector<std::string> values)
 
 float getSysIdleCpuTime(std::vector<std::string> values)
 {
-    return (std::stof(values[CPUstates::S_IDLE]) + stof(values[CPUstates::S_IOWAIT]));
+    return (std::stof(values[CPUstates::S_IDLE]) + std::stof(values[CPUstates::S_IOWAIT]));
 }
 
 float ProcessParser::getSysRamPercent()
@@ -277,7 +281,7 @@ float ProcessParser::getSysRamPercent()
             std::istringstream buffer(line);
             std::istream_iterator<std::string> beg(buffer), end;
             std::vector<std::string> tokens{beg, end};
-            freeMemory = stof(tokens[1]);
+            freeMemory = std::stof(tokens[1]);
         }
 
         if (line.compare(0, searchParams[3].size(), searchParams[3]) == 0)
@@ -285,7 +289,7 @@ float ProcessParser::getSysRamPercent()
             std::istringstream buffer(line);
             std::istream_iterator<std::string> beg(buffer), end;
             std::vector<std::string> tokens{beg, end};
-            bufferMemory = stof(tokens[1]);
+            bufferMemory = std::stof(tokens[1]);
         }
     }
     return (100.0 * (1 - (freeMemory / (totalMemory - bufferMemory))));

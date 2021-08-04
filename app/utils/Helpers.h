@@ -1,6 +1,10 @@
+#ifndef HELPERS_H
+#define HELPERS_H
+
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <iomanip>
 
 class Helpers
@@ -60,7 +64,12 @@ std::ifstream Helpers::getStream(std::string path)
 {
     // opening file stream
     std::ifstream stream(path);
-    if (!stream.is_open())
+    if (!stream.is_open()){
+         std::cout << "Error **"<<std::endl;
         throw std::runtime_error("Could not open PID file [ " + path + " does not exist ]");
+    }
     return stream;
 }
+
+#endif //f HELPERS_H
+

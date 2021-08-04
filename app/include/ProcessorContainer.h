@@ -19,7 +19,7 @@ public:
     }
     void refreshList();
     std::string printList();
-    std::vector<std::string> getList();
+    std::vector<std::vector<std::string>> getList();
 
 private:
     std::vector<Process> _list;
@@ -45,7 +45,7 @@ void ProcessContainer ::refreshList()
  * 
  * @return std::string 
  */
-std::string ProcessContainer ::printList()
+std::string ProcessContainer::printList()
 {
     std::string result = "";
     for (auto i : _list)
@@ -58,16 +58,30 @@ std::string ProcessContainer ::printList()
 /**
  * @brief  retrieves the list of the current process
  * 
- * @return std::vector<std::string> 
+ * @return  std::vector<std::vector<std::string>> 
  */
-std::vector<std::string> ProcessContainer ::getList()
+ std::vector<std::vector<std::string>> ProcessContainer ::getList()
 {
-    std::vector<std::string> values;
-    for (int i = (this->_list.size() - 10); i < this->_list.size(); i++)
-    {
-        values.push_back(this->_list[i].getProcess());
+  std::vector<std::vector<std::string>> values;
+  std::vector<std::string> stringified_list;
+  for (int i = 0; i < this->_list.size(); ++i) {
+    stringified_list.push_back(this->_list[i].getProcess());
+  }
+  int last_index = 0;
+  for (int i = 0; i < stringified_list.size(); ++i) {
+    if (i > 0 && i % 10 == 0) {
+      std::vector<std::string> sub(&stringified_list[i-10],
+                                   &stringified_list[i]);
+      values.push_back(sub);
+      last_index = i;
     }
-    return values;
+    if (i == (this->_list.size() - 1) && (i - last_index) < 10) {
+      std::vector<std::string> sub(&stringified_list[last_index],
+                                   &stringified_list[i+1]);  // list.end() ?
+      values.push_back(sub);
+    }
+  }
+  return values;
 }
 
 #endif // PROCESSORCONTAINER_H

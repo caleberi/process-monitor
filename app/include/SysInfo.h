@@ -1,8 +1,8 @@
 #ifndef SYSINFO_H
 #define SYSINFO_H
 
-#include "./ProcessParser.h";
-#include "../utils/Helpers.h";
+#include "./ProcessParser.h"
+#include "../utils/Helpers.h"
 
 class SysInfo
 {
@@ -83,10 +83,6 @@ std::string SysInfo::getThreads() const
     return std::to_string(this->threads);
 };
 
-std::string SysInfo::getOsName() const
-{
-    return this->osName;
-};
 
 void SysInfo::setLastCpuMeasures()
 {

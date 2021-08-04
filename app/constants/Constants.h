@@ -9,7 +9,7 @@
  */
 enum  CPUstates
 {
-    S_USER = 0,
+    S_USER =1,
     S_NICE,
     S_SYSTEM,
     S_IDLE,
@@ -36,7 +36,7 @@ public:
      * */
     static std::string basePath()
     {
-        return "/proc";
+        return "/proc/";
     }
 
     /**
@@ -76,7 +76,7 @@ public:
      * */
     static std::string memoInfoPath()
     {
-        return "memoinfo";
+        return "meminfo";
     }
 
     /**
@@ -86,6 +86,15 @@ public:
     {
         return "version";
     }
+
+    /**
+     * @brief 
+     * 
+     * @return std::string 
+     */
+    static std::string CpuInfoPath() {
+    return "cpuinfo";
+  }
 };
 
 #endif /* CONSTANTS_H */
